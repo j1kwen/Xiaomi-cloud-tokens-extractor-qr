@@ -3,3 +3,5 @@ pycryptodome
 charset-normalizer
 Pillow
 colorama
+qrcode
+pyzbar
