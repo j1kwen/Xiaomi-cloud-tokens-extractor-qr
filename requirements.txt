@@ -4,4 +4,4 @@ charset-normalizer
 Pillow
 colorama
 qrcode
-pyzbar
+opencv-python

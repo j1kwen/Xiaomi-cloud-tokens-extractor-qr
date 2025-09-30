@@ -8,9 +8,8 @@ import random
 import sys
 import time
 import qrcode
-from io import BytesIO
-import pyzbar.pyzbar as pyzbar
-from PIL import Image
+import cv2
+import numpy as np
 
 import requests
 from colorama import Fore, Style, init
@@ -20,7 +19,6 @@ try:
 except ModuleNotFoundError:
     from Cryptodome.Cipher import ARC4
 
-from PIL import Image
 
 SERVERS = ["cn", "de", "us", "ru", "tw", "sg", "in", "i2"]
 NAME_TO_LEVEL = {
@@ -279,14 +277,15 @@ class XiaomiCloudConnector:
 
     @staticmethod
     def display_qrcode(content: bytes) -> None:
-        image = Image.open(BytesIO(content))
-        result = pyzbar.decode(image)
+        nparr = np.frombuffer(content, np.uint8)
+        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        detector = cv2.QRCodeDetector()
+        result, points, _ = detector.detectAndDecode(image)
         if not result:
             raise ValueError("Invaild QR Image.")
-        qr_content = result[0].data.decode("utf-8")
-        _LOGGER.debug("QR Content: " + qr_content)
+        _LOGGER.debug("QR Content: " + result)
         qr = qrcode.QRCode(border=1)
-        qr.add_data(qr_content)
+        qr.add_data(result)
         qr.make(fit=True)
         qr.print_ascii(invert=True)
 
